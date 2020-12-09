@@ -1,0 +1,36 @@
+  [1m[35m (458.3ms)[0m  [1m[35mCREATE DATABASE "smart_lock_development" ENCODING = 'unicode'[0m
+  [1m[35m (134.9ms)[0m  [1m[35mCREATE DATABASE "smart_lock_test" ENCODING = 'unicode'[0m
+  [1m[35m (165.9ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (29.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7068811363097155140)[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateLocks (20201209152434)
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (35.2ms)[0m  [1m[35mCREATE TABLE "locks" ("id" bigserial primary key, "kind" character varying, "status" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (9.0ms)[0m  [1m[35mALTER TABLE "locks" ALTER COLUMN "id" TYPE character varying[0m
+  [1m[36mprimary::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20201209152434"]]
+  [1m[35m (5.7ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateEntries (20201209152946)
+  [1m[35m (6.9ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (30.4ms)[0m  [1m[35mCREATE TABLE "entries" ("id" bigserial primary key, "timestamp" timestamp, "status_change" character varying, "lock_id" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_0f62028be3"
+FOREIGN KEY ("lock_id")
+  REFERENCES "locks" ("id")
+)[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE  INDEX  "index_entries_on_lock_id" ON "entries"  ("lock_id")[0m
+  [1m[36mprimary::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20201209152946"]]
+  [1m[35m (2.6ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateServers (20201209153424)
+  [1m[35m (6.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (20.3ms)[0m  [1m[35mCREATE TABLE "servers" ("id" bigserial primary key, "code_name" character varying, "access_token" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mprimary::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ($1) RETURNING "version"[0m  [["version", "20201209153424"]]
+  [1m[35m (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (21.8ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "development"], ["created_at", "2020-12-09 15:34:42.751255"], ["updated_at", "2020-12-09 15:34:42.751255"]]
+  [1m[35m (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT pg_advisory_unlock(7068811363097155140)[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mServer Create (6.3ms)[0m  [1m[32mINSERT INTO "servers" ("code_name", "access_token", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["code_name", "llamas in pyjamas"], ["access_token", "rxJtFTwbfr4YG2hh5ECEwdyP"], ["created_at", "2020-12-09 15:38:48.014689"], ["updated_at", "2020-12-09 15:38:48.014689"]]
+  [1m[35m (13.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mServer Load (1.5ms)[0m  [1m[34mSELECT "servers".* FROM "servers" ORDER BY "servers"."id" ASC LIMIT $1[0m  [["LIMIT", 1]]
